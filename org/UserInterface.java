@@ -60,18 +60,54 @@ public class UserInterface {
 	}
 
 	public void createFund() {
+		String name = "";
 
-		System.out.print("Enter the fund name: ");
-		String name = in.nextLine().trim();
+		while (name.isBlank()) {
+			System.out.print("Enter the fund name: ");
+			name = in.nextLine().trim();
+			// if name is blank re-prompt user
+			if (name.isBlank()) {
+				System.out.println("Fund name is blank, please enter a valid non-blank name");
+			}
+		}
 
-		System.out.print("Enter the fund description: ");
-		String description = in.nextLine().trim();
+		String description= "";
+		while (description.isBlank()) {
+			System.out.print("Enter the fund description: ");
+			description = in.nextLine().trim();
 
-		System.out.print("Enter the fund target: ");
-		long target = in.nextInt();
-		in.nextLine();
+			if (description.isBlank()) {
+				System.out.println("Fund description is blank, please enter a valid non-blank name");
+			}
+
+		}
+
+
+		long target = -1;
+		// Handle non-numeric value and negative values
+		while (target < 0) {
+			System.out.print("Enter the fund target: ");
+			String targetString = in.nextLine().trim();
+
+			try {
+				target = Long.parseLong(targetString);
+
+				if (target < 0) {
+					System.out.println("Target fund can not be negative, re-enter a non-negative value");
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input, please enter a non-negative numeric value");
+			}
+		}
+
 
 		Fund fund = dataManager.createFund(org.getId(), name, description, target);
+//		if (fund != null) {
+//			org.getFunds().add(fund);
+//			System.out.println("Fund created successfully!");
+//		} else {
+//			System.out.println("Failed to create fund. Please try again.");
+//		}
 		org.getFunds().add(fund);
 
 
@@ -120,18 +156,24 @@ public class UserInterface {
 		String password = args[1];
 		
 		
-		Organization org = ds.attemptLogin(login, password);
-		
-		if (org == null) {
-			System.out.println("Login failed.");
-		}
-		else {
+		try {
+			Organization org = ds.attemptLogin(login, password);
 
-			UserInterface ui = new UserInterface(ds, org);
-		
-			ui.start();
-		
+			if (org == null) {
+				System.out.println("Login failed.");
+			}
+			else {
+
+				UserInterface ui = new UserInterface(ds, org);
+
+				ui.start();
+
+			}
+
+		} catch (IllegalStateException e) {
+			System.out.println("Error in communicating with server");
 		}
+
 	}
 
 }
