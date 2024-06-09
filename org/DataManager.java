@@ -34,15 +34,19 @@ public class DataManager {
 			JSONObject json = (JSONObject) parser.parse(response);
 			String status = (String)json.get("status");
 
-
 			if (status.equals("success")) {
+
+				//get the JSON object details
 				JSONObject data = (JSONObject)json.get("data");
 				String fundId = (String)data.get("_id");
 				String name = (String)data.get("name");
-				String description = (String)data.get("descrption");
+				String description = (String)data.get("description");
 				Organization org = new Organization(fundId, name, description);
 
+				//and the funds
 				JSONArray funds = (JSONArray)data.get("funds");
+
+				//iterate through fund info
 				Iterator it = funds.iterator();
 				while(it.hasNext()){
 					JSONObject fund = (JSONObject) it.next(); 
@@ -51,22 +55,28 @@ public class DataManager {
 					description = (String)fund.get("description");
 					long target = (Long)fund.get("target");
 
+					//set up funds
 					Fund newFund = new Fund(fundId, name, description, target);
 
+					//iterate through info about each donation in the fund
 					JSONArray donations = (JSONArray)fund.get("donations");
 					List<Donation> donationList = new LinkedList<>();
 					Iterator it2 = donations.iterator();
 					while(it2.hasNext()){
 						JSONObject donation = (JSONObject) it2.next();
-						String contributorId = (String)donation.get("contributor");
-						String contributorName = this.getContributorName(contributorId);
+						String contributorId = (String)donation.get("fundID");		//check this
+						String contributorName = (String)donation.get("contributorName");		//issue?
 						long amount = (Long)donation.get("amount");
 						String date = (String)donation.get("date");
+
+						//and add to the donation list
 						donationList.add(new Donation(fundId, contributorName, amount, date));
 					}
 
+					//associate donations with the fund
 					newFund.setDonations(donationList);
 
+					//and the fund with the organisation
 					org.addFund(newFund);
 
 				}
@@ -119,25 +129,34 @@ public class DataManager {
 
 		try {
 
+			//create object to represent fund
 			Map<String, Object> map = new HashMap<>();
 			map.put("orgId", orgId);
 			map.put("name", name);
 			map.put("description", description);
 			map.put("target", target);
+
+			//feed this to the RESTful API as an http request
 			String response = client.makeRequest("/createFund", map);
 
+			//create parser
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(response);
 			String status = (String)json.get("status");
 
+			//if successful, create the fund as a JSON object
 			if (status.equals("success")) {
 				JSONObject fund = (JSONObject)json.get("data");
 				String fundId = (String)fund.get("_id");
 				return new Fund(fundId, name, description, target);
 			}
+
+			//to get here, we have been unsuccessful in getting the json object
 			else return null;
 
 		}
+
+		//to get here, we have thrown an exception
 		catch (Exception e) {
 			e.printStackTrace();
 			return null;
