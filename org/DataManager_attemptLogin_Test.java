@@ -71,7 +71,7 @@ public class DataManager_attemptLogin_Test {
 
     }
 
-    @Test
+    @Test(expected=IllegalStateException.class)
     public void invalidLoginExceptionTest() {
 
         ByteArrayOutputStream error = new ByteArrayOutputStream();
@@ -86,10 +86,7 @@ public class DataManager_attemptLogin_Test {
             }
 
         });
-
-        assertNull(dm.attemptLogin(null, null));
-        assertEquals("javalangNullPointerExceptionCannotinvokeStringlengthbecausesisnullatjavabasejava", error.toString().replaceAll("[^a-zA-Z0-9]", "").substring(0,80));
-
+        dm.attemptLogin(null, null);
     }
 
     @Test
