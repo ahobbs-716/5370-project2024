@@ -33,7 +33,11 @@ public class Donation implements Serializable {
     }
 
     public String toString() {
-        return fundName + ": $" + amount + " on " + date;
+        //Date tempDate = Date.localDate(this.date);
+        LocalDate tempDate = LocalDate.parse(date);
+        String fdate = tempDate.format("MMMM d, yyyy");
+
+        return fundName + ": $" + amount + " on " + fdate;
     }
 
 
