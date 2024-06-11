@@ -1,6 +1,8 @@
 package edu.upenn.cis573.project;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Donation implements Serializable {
 
@@ -33,7 +35,11 @@ public class Donation implements Serializable {
     }
 
     public String toString() {
-        return fundName + ": $" + amount + " on " + date;
+        //Date tempDate = Date.localDate(this.date);
+        LocalDate tempDate = LocalDate.parse(date, DateTimeFormatter.ISO_DATE_TIME);
+        String fdate = tempDate.format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
+
+        return fundName + ": $" + amount + " on " + fdate;
     }
 
 
