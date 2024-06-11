@@ -55,7 +55,7 @@ public class DataManager_getContributorName_Test {
 
         });
 
-        assertEquals(null, dm.getContributorName("not_a_name"));
+        assertNull(dm.getContributorName("not_a_name"));
 
     }
 }
