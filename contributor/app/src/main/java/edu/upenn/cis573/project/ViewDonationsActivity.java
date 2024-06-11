@@ -34,7 +34,7 @@ public class ViewDonationsActivity extends AppCompatActivity {
         String[] donations = new String[contributor.getDonations().size() + 2];
 
         int index = 0;
-        double total = 0.0;
+        long total = 0;
 
         for (Donation d : contributor.getDonations()) {
             //Log.v("donation", d.toString());
@@ -43,7 +43,7 @@ public class ViewDonationsActivity extends AppCompatActivity {
         }
         //Added code for task 1.6
         donations[index++] = "----";
-        donations[index] = String.format("\t Total: $%0.2f", total);
+        donations[index++] = String.format("\t Total: %d", total);
         ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.listview, donations);
 
         ListView listView = (ListView) findViewById(R.id.donationsList);
