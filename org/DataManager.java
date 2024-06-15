@@ -24,6 +24,10 @@ public class DataManager {
 	 */
 	public Organization attemptLogin(String login, String password) {
 
+		if (login == null || password == null) {
+			throw new IllegalArgumentException();
+		}
+
 		try {
 			Map<String, Object> map = new HashMap<>();
 			map.put("login", login);
@@ -64,8 +68,8 @@ public class DataManager {
 					Iterator it2 = donations.iterator();
 					while(it2.hasNext()){
 						JSONObject donation = (JSONObject) it2.next();
-						String contributorId = (String)donation.get("contributor");
-						String contributorName = this.getContributorName(contributorId);
+						String contributorId = (String)donation.get("fundID");		//check this
+						String contributorName = (String)donation.get("contributorName");		//issue?
 						long amount = (Long)donation.get("amount");
 						String date = (String)donation.get("date");
 
@@ -82,8 +86,9 @@ public class DataManager {
 				}
 
 				return org;
-			}
-			else return null;
+			} else if (status.equals("error")) {
+				throw new IllegalStateException("Error in communicating with server");
+			} else return null;
 		}
 		catch (Exception e) {
 //			e.printStackTrace();
@@ -99,6 +104,14 @@ public class DataManager {
 	 */
 	public String getContributorName(String id) {
 
+		if (client == null) {
+			throw new IllegalStateException();
+		}
+
+		if (id == null) {
+			throw new IllegalArgumentException();
+		}
+
 		try {
 
 			Map<String, Object> map = new HashMap<>();
@@ -112,14 +125,15 @@ public class DataManager {
 			if (status.equals("success")) {
 				String name = (String)json.get("data");
 				return name;
-			}
-			else return null;
+			} else if (status.equals("error")) {
+				throw new IllegalStateException("An error occurred in the database");
+			} else return null;
 
 
 		}
 		catch (Exception e) {
-			return null;
-		}	
+			throw new IllegalStateException("Error in communicating with the server");
+		}
 	}
 
 	/**
@@ -127,6 +141,13 @@ public class DataManager {
 	 * @return a new Fund object if successful; null if unsuccessful
 	 */
 	public Fund createFund(String orgId, String name, String description, long target) {
+		if (client == null) {
+			throw new IllegalStateException("The internal communication has catastrophically failed. This is " +
+					"unlikely to resolve itself");
+		}
+		if (orgId == null || name == null || description == null) {
+			throw new IllegalArgumentException("Invalid data was given");
+		}
 
 		try {
 
@@ -141,27 +162,28 @@ public class DataManager {
 			String response = client.makeRequest("/createFund", map);
 
 			//create parser
-			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(response);
-			String status = (String)json.get("status");
-
+			String status;
+			JSONObject json;
+			try {
+				JSONParser parser = new JSONParser();
+				json = (JSONObject) parser.parse(response);
+				status = (String) json.get("status");
+			} catch (NullPointerException e) {
+				throw new IllegalStateException("The request to the data base gave an invalid return");
+			}
 			//if successful, create the fund as a JSON object
 			if (status.equals("success")) {
 				JSONObject fund = (JSONObject)json.get("data");
 				String fundId = (String)fund.get("_id");
 				return new Fund(fundId, name, description, target);
-			}
+			} else if (status.equals("error")) {
+				throw new IllegalStateException("An error occurred in the database");
+			} else return null;
 
-			//to get here, we have been unsuccessful in getting the json object
-			else return null;
-
-		}
-
-		//to get here, we have thrown an exception
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
-		}	
+			throw new IllegalStateException("An unknown error occurred in trying to communicate with the database");
+		}
 	}
 
 

@@ -19,7 +19,33 @@ public class DataManager_attemptLogin_Test {
 
             @Override
             public String makeRequest(String resource, Map<String, Object> queryParams) {
-                return "{\"status\":\"success\",\"data\":{\"_id\":\"6661df6d04a990204448071c\",\"login\":\"ah716\",\"password\":\"ah716passcode\",\"name\":\"AliceOrganisation\",\"description\":\"Alice's Organisation\",\"funds\":[{\"target\":1000,\"_id\":\"6666133edafd6265e01f090c\",\"name\":\"fund1\",\"description\":\"Alice's fund\",\"org\":\"6661df6d04a990204448071c\",\"donations\":[{\"_id\":\"66661349dafd6265e01f0913\",\"fund\":\"6666133edafd6265e01f090c\",\"date\":\"2024-06-09T20:40:41.040Z\",\"amount\":1001,\"__v\":0}],\"__v\":0}],\"__v\":0}}";
+                return "{\"status\":\"success\"," +
+                        "\"data\":{" +
+                        "\"_id\":\"12345\"," +
+                        "\"name\":\"new fund\"," +
+                        "\"description\":\"this is the new fund\"," +
+                        "\"funds\"[" +
+                        "{" +
+                        "\"_id\":\"1029\"" +
+                        "\"name\":\"fund1\"" +
+                        "\"description\":\"the first fund\"" +
+                        "\"target\":10000" +
+                        "\"donations\"[" +
+                        "{" +
+                        "\"contributorID\":\"23433\"" +
+                        "\"contributor\":\"person1\"" +
+                        "\"amount\":1000" +
+                        "\"date\":\"01/01/2024\"" +
+                        "}" +
+                        "]" +
+                        "}" +
+                        "]" +
+                        "\"target\":10000" +
+                        "\"org\":\"5678\"," +
+                        "\"donations\":[]," +
+                        "\"__v\":0}" +
+                        "}";
+
             }
 
         });
@@ -45,7 +71,7 @@ public class DataManager_attemptLogin_Test {
 
     }
 
-    @Test(expected=IllegalStateException.class)
+    @Test(expected=IllegalArgumentException.class)
     public void invalidLoginExceptionTest() {
 
         ByteArrayOutputStream error = new ByteArrayOutputStream();
@@ -70,7 +96,33 @@ public class DataManager_attemptLogin_Test {
 
             @Override
             public String makeRequest(String resource, Map<String, Object> queryParams) {
-                return "{\"status\":\"success\",\"data\":{\"_id\":\"6661df6d04a990204448071c\",\"login\":\"ah716\",\"password\":\"ah716passcode\",\"name\":\"AliceOrganisation\",\"description\":\"Alice's Organisation\",\"funds\":[{\"target\":1000,\"_id\":\"6666133edafd6265e01f090c\",\"name\":\"fund1\",\"description\":\"Alice's fund\",\"org\":\"6661df6d04a990204448071c\",\"donations\":[{\"_id\":\"66661349dafd6265e01f0913\",\"fund\":\"6666133edafd6265e01f090c\",\"date\":\"2024-06-09T20:40:41.040Z\",\"amount\":1001,\"__v\":0}],\"__v\":0}],\"__v\":0}}";
+                return "{\"status\":\"success\"," +
+                        "\"data\":{" +
+                            "\"_id\":\"12345\"," +
+                            "\"name\":\"organisation1\"," +
+                            "\"description\":\"this is organisation1\"," +
+                            "\"funds\"[" +
+                                "{" +
+                                    "\"_id\":\"1029\"" +
+                                    "\"name\":\"fund1\"" +
+                                    "\"description\":\"the first fund\"" +
+                                    "\"target\":10000" +
+                                    "\"donations\"[" +
+                                        "{" +
+                                            "\"fundID\":\"1029\"" +
+                                            "\"contributorName\":\"person1\"" +
+                                            "\"amount\":1000" +
+                                            "\"date\":\"01/01/2024\"" +
+                                        "}" +
+                                    "]" +
+                                "}" +
+                            "]" +
+                            "\"target\":10001" +
+                            "\"org\":\"5678\"," +
+                            "\"donations\":[]," +
+                            "\"__v\":0}" +
+                        "}";
+
             }
 
         });
@@ -80,23 +132,24 @@ public class DataManager_attemptLogin_Test {
         assertNotNull(org);
 
         //test orgs
-        assertEquals("6661df6d04a990204448071c", org.getId());
-        assertEquals("AliceOrganisation", org.getName());
-        assertEquals("Alice's Organisation", org.getDescription());
+        assertEquals("12345", org.getId());              //assume id should be string
+        assertEquals("organisation1", org.getName());
+        assertEquals("this is organisation1", org.getDescription());
 
         //test funds
         assertEquals(1, org.getFunds().size());
-        Fund fund = (Fund)org.getFunds().getFirst();
-        assertEquals("6666133edafd6265e01f090c", fund.getId());
+        Fund fund = (Fund)org.getFunds().get(0);
+        assertEquals("1029", fund.getId());
         assertEquals("fund1", fund.getName());
-        assertEquals("Alice's fund", fund.getDescription());
+        assertEquals("the first fund", fund.getDescription());
         assertEquals(1, fund.getDonations().size());
 
         //test donations
-        Donation donation = fund.getDonations().getFirst();
-        assertEquals("6666133edafd6265e01f090c", donation.getFundId());
-        assertEquals(1001, donation.getAmount());
-        assertEquals("2024-06-09T20:40:41.040Z", donation.getDate());
+        Donation donation = fund.getDonations().get(0);
+        assertEquals("1029", donation.getFundId());   //shouldn't this be donationID?
+        assertEquals("person1", donation.getContributorName());
+        assertEquals(1000, donation.getAmount());
+        assertEquals("01/01/2024", donation.getDate());
 
     }
 

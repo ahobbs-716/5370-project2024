@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNull;
 
 public class DataManager_getContributorName_Test {
 
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void getContributorNameExceptionTest() {
 
         DataManager dm = new DataManager(new WebClient("localhost", 3001) {
@@ -20,7 +20,7 @@ public class DataManager_getContributorName_Test {
 
         });
 
-        assertNull(dm.getContributorName("data"));
+        dm.getContributorName("data");
 
     }
 
@@ -55,7 +55,7 @@ public class DataManager_getContributorName_Test {
 
         });
 
-        assertNull(dm.getContributorName("not_a_name"));
+        assertEquals(null, dm.getContributorName("not_a_name"));
 
     }
 }
