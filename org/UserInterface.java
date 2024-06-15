@@ -31,12 +31,18 @@ public class UserInterface {
 				System.out.println("Enter the fund number to see more information.");
 			}
 			System.out.println("Enter 0 to create a new fund");
+			System.out.println("Enter \"l\" or \"logout\" to logout");
 			// reads full line instead of expecting an int
 			String input = in.nextLine();
 			// closes program
 			if (input.equals("quit") || input.equals("q")) {
 				System.out.println("Goodbye!");
 				return;
+			} else if (input.equals("logout") || input.equals("l")) {
+				if (!login(null, null)) {
+					return;
+				}
+				continue;
 			}
 			int option;
 			try {
@@ -100,15 +106,23 @@ public class UserInterface {
 			}
 		}
 
+		try {
+			Fund fund = dataManager.createFund(org.getId(), name, description, target);
+			if (fund != null) {
+				org.getFunds().add(fund);
+				return;
+			}
+			System.out.println("We were unable to create the fund");
 
-		Fund fund = dataManager.createFund(org.getId(), name, description, target);
-//		if (fund != null) {
-//			org.getFunds().add(fund);
-//			System.out.println("Fund created successfully!");
-//		} else {
-//			System.out.println("Failed to create fund. Please try again.");
-//		}
-		org.getFunds().add(fund);
+		} catch (IllegalStateException e) {
+			System.out.println(e.getMessage());
+		}
+		System.out.println("Enter 1 if you would like to try again, and anything else otherwise");
+		String input = in.nextLine();
+		if (input.equals("1")) {
+			createFund();
+		}
+
 
 
 	}
@@ -138,40 +152,62 @@ public class UserInterface {
 		} else {
 			System.out.println("Total donation amount: $" + raised + " (>99% of target)");
 		}
-	
-		
+
+
 		System.out.println("Press the Enter key to go back to the listing of funds");
 		in.nextLine();
-		
-		
-		
+
+
+
 	}
-	
-	
+
+	public boolean login(String login, String password) {
+		while (true) {
+			// pass null arguments for a logout and new login
+			if (login == null || password == null) {
+				System.out.println("Please enter the login");
+				login = in.nextLine();
+				System.out.println("Please enter the password");
+				password = in.nextLine();
+			}
+			try {
+				org = dataManager.attemptLogin(login, password);
+
+				if (org == null) {
+					System.out.println("Login failed.");
+				} else {
+					return true;
+				}
+
+			} catch (IllegalStateException e) {
+				System.out.println("Error in communicating with server");
+			}
+			System.out.println("Enter either \"q\" or \"quit\" to exit or press enter to try again.");
+			String Input = in.nextLine();
+			if (Input.equals("quit") || Input.equals("q")) {
+				System.out.println("Goodbye!");
+				return false;
+			}
+			login = null;
+			password = null;
+
+		}
+	}
+
+
 	public static void main(String[] args) {
 
 		DataManager ds = new DataManager(new WebClient("localhost", 3001));
+		String login = null;
+		String password = null;
+		if (args.length >= 2) {
+			login = args[0];
+			password = args[1];
+		}
 
-		String login = args[0];
-		String password = args[1];
-		
-		
-		try {
-			Organization org = ds.attemptLogin(login, password);
-
-			if (org == null) {
-				System.out.println("Login failed.");
-			}
-			else {
-
-				UserInterface ui = new UserInterface(ds, org);
-
-				ui.start();
-
-			}
-
-		} catch (IllegalStateException e) {
-			System.out.println("Error in communicating with server");
+		UserInterface ui = new UserInterface(ds, null);
+		if (ui.login(login, password)) {
+			ui.start();
 		}
 
 	}
