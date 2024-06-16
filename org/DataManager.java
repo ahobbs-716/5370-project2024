@@ -12,7 +12,7 @@ import org.json.simple.parser.JSONParser;
 public class DataManager {
 
 	private final WebClient client;
-
+	private Map<String, String> cache = new HashMap<>();  // cache to ensure
 	public DataManager(WebClient client) {
 		this.client = client;
 	}
@@ -112,6 +112,11 @@ public class DataManager {
 			throw new IllegalArgumentException();
 		}
 
+		// Task 2.1
+		if (cache.containsKey(id)) {
+			cache.get(id);
+		}
+
 		try {
 
 			Map<String, Object> map = new HashMap<>();
@@ -124,6 +129,8 @@ public class DataManager {
 
 			if (status.equals("success")) {
 				String name = (String)json.get("data");
+				// put value in cache for next time
+				cache.put(id, name);
 				return name;
 			} else if (status.equals("error")) {
 				throw new IllegalStateException("An error occurred in the database");
