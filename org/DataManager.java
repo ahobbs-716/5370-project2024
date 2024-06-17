@@ -120,8 +120,8 @@ public class DataManager {
 		try {
 
 			Map<String, Object> map = new HashMap<>();
-			map.put("_id", id);
-			String response = client.makeRequest("/findContributrNameById", map);
+			map.put("id", id);
+			String response = client.makeRequest("/findContributorNameById", map);
 
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(response);
