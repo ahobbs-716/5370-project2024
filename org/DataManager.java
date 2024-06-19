@@ -193,5 +193,55 @@ public class DataManager {
 		}
 	}
 
+	/**
+	 * This method deletes the specified fund in the database using this /deleteFund endpoint in the API
+	 * @param orgID the ID of the fund to be deleted
+	 */
+	public boolean deleteFund(String orgID) {
+
+		//error check
+		if (client == null) {
+			throw new IllegalStateException("The internal communication has catastrophically failed. This is " +
+					"unlikely to resolve itself");
+		}
+
+		//confirm that user would like to delete fund
+		int confirmation = JOptionPane.showConfirmDialog(null, "Are you sure?");
+
+		//if they select no, terminate early
+		if (confirmation == 1 || confirmation == 2) {
+			return false;
+		}
+
+			//otherwise, use the deleteFund endpoint
+			try {
+
+				//create object to represent fund
+				Map<String, Object> map = new HashMap<>();
+				map.put("id", orgID);
+
+				//feed this to the RESTful API as a http request
+				String response = client.makeRequest("/deleteFund", map);
+
+				try {
+					JSONParser parser = new JSONParser();
+					JSONObject json = (JSONObject) parser.parse(response);
+
+					if (json.get("status").equals("failure")) {
+						throw new IllegalStateException("The request to the data base gave an invalid return");
+					}
+				} catch (ParseException | IllegalStateException e) {
+					throw new RuntimeException(e);
+                }
+
+            } catch (Exception e) {
+				e.printStackTrace();
+				throw new IllegalStateException("An unknown error occurred in trying to communicate with the database");
+			}
+
+			//indicate that the operation has been successful
+			return true;
+	}
+
 
 }
