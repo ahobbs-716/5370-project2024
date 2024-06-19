@@ -153,12 +153,24 @@ public class UserInterface {
 			System.out.println("Total donation amount: $" + raised + " (>99% of target)");
 		}
 
+		System.out.println("\nPress 1 to delete this fund");
+		System.out.println("Press any other key to go back to the listing of funds");
 
-		System.out.println("Press the Enter key to go back to the listing of funds");
-		in.nextLine();
+		while (command != "1") {
 
+			command = in.nextLine();
+			if (command.equals("1")) {
+				deleteFund(fund);
+			}
+		}
 
+	}
 
+	public void deleteFund(Fund fund) {
+
+		if (dataManager.deleteFund(fund.getId())) {
+			org.deleteFund(fund);
+		};
 	}
 
 	public boolean login(String login, String password) {
