@@ -33,6 +33,7 @@ public class UserInterface {
 			}
 			System.out.println("Enter 0 to create a new fund");
 			System.out.println("Enter \"l\" or \"logout\" to logout");
+			System.out.println("Enter \"a\" or \"all\" to list out all contributors to this organization");
 			// reads full line instead of expecting an int
 			String input = in.nextLine();
 			// closes program
@@ -43,6 +44,9 @@ public class UserInterface {
 				if (!login(null, null)) {
 					return;
 				}
+				continue;
+			} else if (input.equals("all") || input.equals("a")) {
+				displayOrgContributions();
 				continue;
 			}
 			int option;
@@ -64,6 +68,16 @@ public class UserInterface {
 
 		}
 
+	}
+
+	public void displayOrgContributions() {
+		System.out.println("\n\nAll contributions to the organization's funds:");
+		List<Donation> donations = org.listAllDonations();
+		for (Donation donation : donations) {
+			System.out.println(donation.getFundId() + ": $" + donation.getAmount() + " on " + donation.getDate() + " by " + donation.getContributorName());
+		}
+		System.out.println("Press the Enter key to go back to the listing of funds");
+		in.nextLine();
 	}
 
 	public void createFund() {
