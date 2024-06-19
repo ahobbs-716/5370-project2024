@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.util.List;
 import java.util.Scanner;
 
@@ -154,26 +155,43 @@ public class UserInterface {
 		}
 
 		System.out.println("\nPress 1 to delete this fund");
-		System.out.println("Press any other key to go back to the listing of funds");
+		System.out.println("Press 2 to go back to the listing of funds");
 
 		String command = null; 
 		
-		while (command != "1") {
+		while (command != "1" && command != "2") {
 
 			command = in.nextLine();
+
 			if (command.equals("1")) {
-				deleteFund(fund);
+
+				if (confirmSelection()) {
+					if (dataManager.deleteFund(fund.getId())) {
+						org.deleteFund(fund);
+					};
+				}
+
 				return;
 			}
-		}
 
+			if (command.equals("2")) {
+				return;
+
+			}
+		}
 	}
 
-	public void deleteFund(Fund fund) {
+	public boolean confirmSelection() {
 
-		if (dataManager.deleteFund(fund.getId())) {
-			org.deleteFund(fund);
-		};
+		//confirm that user would like to delete fund
+		int confirmation = JOptionPane.showConfirmDialog(null, "Are you sure?");
+
+		//if they select no, terminate early
+		if (confirmation == 1 || confirmation == 2) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public boolean login(String login, String password) {

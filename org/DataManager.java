@@ -1,13 +1,12 @@
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import javax.swing.*;
 
 public class DataManager {
 
@@ -195,53 +194,44 @@ public class DataManager {
 
 	/**
 	 * This method deletes the specified fund in the database using this /deleteFund endpoint in the API
-	 * @param orgID the ID of the fund to be deleted
+	 * @param fundID the ID of the fund to be deleted
 	 */
-	public boolean deleteFund(String orgID) {
+	public boolean deleteFund(String fundID) {
 
 		//error check
 		if (client == null) {
 			throw new IllegalStateException("The internal communication has catastrophically failed. This is " +
-					"unlikely to resolve itself");
+					"unlikely to resolve itself.");
 		}
 
-		//confirm that user would like to delete fund
-		int confirmation = JOptionPane.showConfirmDialog(null, "Are you sure?");
-
-		//if they select no, terminate early
-		if (confirmation == 1 || confirmation == 2) {
-			return false;
-		}
-
+		while (true) {
 			//otherwise, use the deleteFund endpoint
 			try {
 
 				//create object to represent fund
 				Map<String, Object> map = new HashMap<>();
-				map.put("id", orgID);
+				map.put("id", fundID);
 
 				//feed this to the RESTful API as a http request
 				String response = client.makeRequest("/deleteFund", map);
 
-				try {
-					JSONParser parser = new JSONParser();
-					JSONObject json = (JSONObject) parser.parse(response);
+				JSONParser parser = new JSONParser();
+				JSONObject json = (JSONObject) parser.parse(response);
 
-					if (json.get("status").equals("failure")) {
-						throw new IllegalStateException("The request to the data base gave an invalid return");
-					}
-				} catch (ParseException | IllegalStateException e) {
-					throw new RuntimeException(e);
-                }
+				if (!(json.get("status").equals("success"))) {
+					throw new IllegalStateException("The request to the data base gave an invalid return");
+				}
 
-            } catch (Exception e) {
-				e.printStackTrace();
-				throw new IllegalStateException("An unknown error occurred in trying to communicate with the database");
+				return true;
+
+			} catch (Exception e) {
+
+				System.err.println("An error occurred in trying to communicate with the database. Press Y if you would like to try this operation.");
+				if (!(new Scanner(System.in)).nextLine().equals("Y")) {
+					throw new IllegalStateException();
+				}
 			}
-
-			//indicate that the operation has been successful
-			return true;
+		}
 	}
-
 
 }
