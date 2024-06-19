@@ -36,7 +36,7 @@ public class DataManager {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(response);
 			String status = (String)json.get("status");
-
+			System.out.println(json);
 			if (status.equals("success")) {
 
 				//get the JSON object details
@@ -48,6 +48,7 @@ public class DataManager {
 
 				//and the funds
 				JSONArray funds = (JSONArray)data.get("funds");
+				System.out.println("HERE");
 
 				//iterate through fund info
 				Iterator it = funds.iterator();
@@ -65,6 +66,7 @@ public class DataManager {
 					JSONArray donations = (JSONArray)fund.get("donations");
 					List<Donation> donationList = new LinkedList<>();
 					Iterator it2 = donations.iterator();
+					System.out.println("HERE");
 					while(it2.hasNext()){
 
 						JSONObject donation = (JSONObject) it2.next();
@@ -127,6 +129,7 @@ public class DataManager {
 			Map<String, Object> map = new HashMap<>();
 			map.put("id", id);
 			String response = client.makeRequest("/findContributorNameById", map);
+			System.out.println(response);
 
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(response);

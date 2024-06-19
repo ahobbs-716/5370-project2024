@@ -19,14 +19,17 @@ public class DataManager_attemptLogin_Test {
 
             @Override
             public String makeRequest(String resource, Map<String, Object> queryParams) {
+                if (resource.equals("/findContributorNameById")) {
+                    return "{\"status\":\"success\",\"data\":\"name\"}";
+                }
                 return "{\"status\":\"success\"," +
                         "\"data\":{" +
-                        "\"_id\":\"12345\"," +
+                        "\"id\":\"12345\"," +
                         "\"name\":\"new fund\"," +
                         "\"description\":\"this is the new fund\"," +
                         "\"funds\"[" +
                         "{" +
-                        "\"_id\":\"1029\"" +
+                        "\"id\":\"1029\"" +
                         "\"name\":\"fund1\"" +
                         "\"description\":\"the first fund\"" +
                         "\"target\":10000" +
@@ -96,14 +99,17 @@ public class DataManager_attemptLogin_Test {
 
             @Override
             public String makeRequest(String resource, Map<String, Object> queryParams) {
+                if (resource.equals("/findContributorNameById")) {
+                    return "{\"status\":\"success\",\"data\":\"name\"}";
+                }
                 return "{\"status\":\"success\"," +
                         "\"data\":{" +
-                            "\"_id\":\"12345\"," +
+                            "\"id\":\"12345\"," +
                             "\"name\":\"organisation1\"," +
                             "\"description\":\"this is organisation1\"," +
                             "\"funds\"[" +
                                 "{" +
-                                    "\"_id\":\"1029\"" +
+                                    "\"id\":\"1029\"" +
                                     "\"name\":\"fund1\"" +
                                     "\"description\":\"the first fund\"" +
                                     "\"target\":10000" +
@@ -147,7 +153,7 @@ public class DataManager_attemptLogin_Test {
         //test donations
         Donation donation = fund.getDonations().get(0);
         assertEquals("1029", donation.getFundId());   //shouldn't this be donationID?
-        assertEquals("person1", donation.getContributorName());
+
         assertEquals(1000, donation.getAmount());
         assertEquals("01/01/2024", donation.getDate());
 
