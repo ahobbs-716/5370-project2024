@@ -156,6 +156,8 @@ public class UserInterface {
 		System.out.println("\nPress 1 to delete this fund");
 		System.out.println("Press any other key to go back to the listing of funds");
 
+		String command = null; 
+		
 		while (command != "1") {
 
 			command = in.nextLine();
