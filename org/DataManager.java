@@ -41,7 +41,7 @@ public class DataManager {
 
 				//get the JSON object details
 				JSONObject data = (JSONObject)json.get("data");
-				String fundId = (String)data.get("_id");
+				String fundId = (String)data.get("id");
 				String name = (String)data.get("name");
 				String description = (String)data.get("description");
 				Organization org = new Organization(fundId, name, description);
@@ -53,7 +53,7 @@ public class DataManager {
 				Iterator it = funds.iterator();
 				while(it.hasNext()){
 					JSONObject fund = (JSONObject) it.next(); 
-					fundId = (String)fund.get("_id");
+					fundId = (String)fund.get("id");
 					name = (String)fund.get("name");
 					description = (String)fund.get("description");
 					long target = (Long)fund.get("target");
@@ -66,9 +66,15 @@ public class DataManager {
 					List<Donation> donationList = new LinkedList<>();
 					Iterator it2 = donations.iterator();
 					while(it2.hasNext()){
+
 						JSONObject donation = (JSONObject) it2.next();
-						String contributorId = (String)donation.get("fundID");		//check this
-						String contributorName = (String)donation.get("contributorName");		//issue?
+						String contributorId = (String)donation.get("contributor");		//check this
+						String contributorName;
+						if (contributorId != null) {
+							contributorName = getContributorName(contributorId);
+						} else {
+							contributorName = null;
+						}
 						long amount = (Long)donation.get("amount");
 						String date = (String)donation.get("date");
 
@@ -113,7 +119,7 @@ public class DataManager {
 
 		// Task 2.1
 		if (cache.containsKey(id)) {
-			cache.get(id);
+			return cache.get(id);
 		}
 
 		try {
@@ -180,7 +186,7 @@ public class DataManager {
 			//if successful, create the fund as a JSON object
 			if (status.equals("success")) {
 				JSONObject fund = (JSONObject)json.get("data");
-				String fundId = (String)fund.get("_id");
+				String fundId = (String)fund.get("id");
 				return new Fund(fundId, name, description, target);
 			} else if (status.equals("error")) {
 				throw new IllegalStateException("An error occurred in the database");

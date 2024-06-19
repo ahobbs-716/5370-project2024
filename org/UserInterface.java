@@ -168,12 +168,15 @@ public class UserInterface {
 			System.out.println("Total donation amount: $" + raised + " (>99% of target)");
 		}
 
-		System.out.println("\nPress 1 to delete this fund");
-		System.out.println("Press 2 to go back to the listing of funds");
 
-		String command = null; 
+
+
+		String command;
 		
-		while (command != "1" && command != "2") {
+		while (true) {
+			System.out.println("\nPress 1 to delete this fund");
+			System.out.println("Press 2 to see the aggregate donations");
+			System.out.println("Press 3 to go back to the listing of funds");
 
 			command = in.nextLine();
 
@@ -189,6 +192,12 @@ public class UserInterface {
 			}
 
 			if (command.equals("2")) {
+				for (Donation donation : fund.getAggregateDonations()) {
+					System.out.println("* " + donation.getContributorName() + ": $" + donation.getAmount());
+				}
+
+			}
+			if (command.equals("3")) {
 				return;
 
 			}
