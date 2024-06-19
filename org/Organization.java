@@ -31,6 +31,10 @@ public class Organization {
 	public List<Fund> getFunds() {
 		return funds;
 	}
+
+	public void deleteFund(Fund fund) {
+		funds.remove(fund);
+	}
 	
 	public void addFund(Fund fund) {
 		funds.add(fund);
