@@ -163,6 +163,7 @@ public class UserInterface {
 			command = in.nextLine();
 			if (command.equals("1")) {
 				deleteFund(fund);
+				return;
 			}
 		}
 
