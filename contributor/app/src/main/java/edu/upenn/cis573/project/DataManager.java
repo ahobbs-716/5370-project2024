@@ -13,9 +13,10 @@ import org.json.JSONArray;
 public class DataManager {
 
     private WebClient client;
-
+    private HashMap<String, String> cache;
     public DataManager(WebClient client) {
         this.client = client;
+        cache = new HashMap<>();
     }
 
 
@@ -85,6 +86,9 @@ public class DataManager {
      * @return the name of the fund if found, "Unknown fund" if not found, null if an error occurs
      */
     public String getFundName(String id) {
+        if (cache.containsKey(id)) {
+            return cache.get(id);
+        }
 
         try {
 
@@ -97,9 +101,14 @@ public class DataManager {
 
             if (status.equals("success")) {
                 String name = (String)json.get("data");
+                cache.put(id, name);
                 return name;
             }
-            else return "Unknown Fund";
+            else {
+                String name = "Unknown Fund";
+                cache.put(id, name);
+                return name;
+            }
 
         }
         catch (Exception e) {
