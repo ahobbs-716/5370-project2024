@@ -1,6 +1,8 @@
+import javax.sound.midi.Soundbank;
 import javax.swing.*;
 import java.util.List;
 import java.util.Scanner;
+import java.util.SortedMap;
 
 public class UserInterface {
 
@@ -29,9 +31,10 @@ public class UserInterface {
 
 					count++;
 				}
-				System.out.println("Enter the fund number to see more information.");
+				System.out.println("\nEnter the fund number to see more information.");
 			}
 			System.out.println("Enter 0 to create a new fund");
+			System.out.println("Enter \"p\" to change this organisation's password");
 			System.out.println("Enter \"l\" or \"logout\" to logout");
 			System.out.println("Enter \"a\" or \"all\" to list out all contributors to this organization");
 			// reads full line instead of expecting an int
@@ -47,6 +50,9 @@ public class UserInterface {
 				continue;
 			} else if (input.equals("all") || input.equals("a")) {
 				displayOrgContributions();
+				continue;
+			} else if (input.equals("p")) {
+				changePassword();
 				continue;
 			}
 			int option;
@@ -70,6 +76,39 @@ public class UserInterface {
 
 	}
 
+	public void changePassword() {
+
+		//check current password
+		System.out.println("\n\nPlease enter your current password to continue:");
+		String oldPassword = in.nextLine();
+		if (dataManager.attemptLogin(org.getName(), oldPassword) == null) {
+			System.out.println("Unable to recognise current password. Returning you to the main menu.");
+			return;
+		}
+
+		//get new password
+		System.out.println("\nPassword accepted. Please enter your new password: ");
+		String newPassword = in.nextLine();
+
+		//confirm new password
+		System.out.println("Please confirm your new password: ");
+		String confirmPassword = in.nextLine();
+
+		while (!confirmPassword.equals("q") && !confirmPassword.equals(newPassword)) {
+			System.out.println("Your new password does not match. Please re-enter your new password, or press 'q' to return to the main menu.");
+			 confirmPassword = in.nextLine();
+			if (confirmPassword.equals("q")) {
+				return;
+			}
+		}
+
+		//if here, password verification complete - send to the database
+		dataManager.updatePassword(org.getId(), newPassword);
+		System.out.println("Password update successful. Returning you to the main menu.");
+
+	}
+
+
 	public void displayOrgContributions() {
 		System.out.println("\n\nAll contributions to the organization's funds:");
 		List<Donation> donations = org.listAllDonations();
@@ -79,6 +118,7 @@ public class UserInterface {
 		System.out.println("Press the Enter key to go back to the listing of funds");
 		in.nextLine();
 	}
+
 
 	public void createFund() {
 		String name = "";
@@ -167,9 +207,6 @@ public class UserInterface {
 		} else {
 			System.out.println("Total donation amount: $" + raised + " (>99% of target)");
 		}
-
-
-
 
 		String command;
 		

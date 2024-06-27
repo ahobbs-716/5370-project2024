@@ -102,6 +102,52 @@ public class DataManager {
 	}
 
 	/**
+	 * Updates the password saved in the database for this organisation
+	 * @param newPassword - the password to update
+	 * @return a boolean representing whether the operation has been successful
+	 */
+	public boolean updatePassword(String id, String newPassword) {
+
+		//defensive programming checks
+		if (client == null) {
+			throw new IllegalStateException("The internal communication has catastrophically failed. This is " +
+					"unlikely to resolve itself");
+		}
+
+		if (newPassword == null || id == null) {
+			throw new IllegalArgumentException();
+		}
+
+		//make the request to the RESTful API
+		Map<String, Object> map = new HashMap<>();
+		map.put("id", id);
+		map.put("password", newPassword);
+		String response = client.makeRequest("/updateOrgPassword", map);
+
+		//check that the request has been successful
+		String status;
+		JSONObject json;
+
+		try {
+
+			//set up the parser
+			JSONParser parser = new JSONParser();
+			json = (JSONObject) parser.parse(response);
+			status = (String) json.get("status");
+
+			//check if a 'success' response
+			if (status.equals("success")) {
+				return true;
+			} else {
+				throw new IllegalStateException();
+			}
+
+		} catch (ParseException | IllegalStateException e) {
+            throw new IllegalStateException("Error in communicating with server.");
+        }
+    }
+
+	/**
 	 * Look up the name of the contributor with the specified ID.
 	 * This method uses the /findContributorNameById endpoint in the API.
 	 * @return the name of the contributor on success; null if no contributor is found
@@ -140,7 +186,6 @@ public class DataManager {
 			} else if (status.equals("error")) {
 				throw new IllegalStateException("An error occurred in the database");
 			} else return null;
-
 
 		}
 		catch (Exception e) {
@@ -181,7 +226,7 @@ public class DataManager {
 				json = (JSONObject) parser.parse(response);
 				status = (String) json.get("status");
 			} catch (NullPointerException e) {
-				throw new IllegalStateException("The request to the data base gave an invalid return");
+				throw new IllegalStateException("The request to the database gave an invalid return");
 			}
 			//if successful, create the fund as a JSON object
 			if (status.equals("success")) {
