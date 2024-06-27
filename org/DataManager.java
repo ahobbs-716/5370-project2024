@@ -36,25 +36,23 @@ public class DataManager {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(response);
 			String status = (String)json.get("status");
-			System.out.println(json);
 			if (status.equals("success")) {
 
 				//get the JSON object details
 				JSONObject data = (JSONObject)json.get("data");
-				String fundId = (String)data.get("id");
+				String fundId = (String)data.get("_id");
 				String name = (String)data.get("name");
 				String description = (String)data.get("description");
 				Organization org = new Organization(fundId, name, description);
 
 				//and the funds
 				JSONArray funds = (JSONArray)data.get("funds");
-				System.out.println("HERE");
 
 				//iterate through fund info
 				Iterator it = funds.iterator();
 				while(it.hasNext()){
 					JSONObject fund = (JSONObject) it.next(); 
-					fundId = (String)fund.get("id");
+					fundId = (String)fund.get("_id");
 					name = (String)fund.get("name");
 					description = (String)fund.get("description");
 					long target = (Long)fund.get("target");
@@ -66,7 +64,6 @@ public class DataManager {
 					JSONArray donations = (JSONArray)fund.get("donations");
 					List<Donation> donationList = new LinkedList<>();
 					Iterator it2 = donations.iterator();
-					System.out.println("HERE");
 					while(it2.hasNext()){
 
 						JSONObject donation = (JSONObject) it2.next();
@@ -189,7 +186,7 @@ public class DataManager {
 			//if successful, create the fund as a JSON object
 			if (status.equals("success")) {
 				JSONObject fund = (JSONObject)json.get("data");
-				String fundId = (String)fund.get("id");
+				String fundId = (String)fund.get("_id");
 				return new Fund(fundId, name, description, target);
 			} else if (status.equals("error")) {
 				throw new IllegalStateException("An error occurred in the database");
@@ -235,9 +232,10 @@ public class DataManager {
 
 			} catch (Exception e) {
 
-				System.err.println("An error occurred in trying to communicate with the database. Press Y if you would like to try this operation.");
+				System.err.println("An error occurred in trying to communicate with the database. Press Y if you would like to try this operation. Select any other key to return to the funds interface.");
 				if (!(new Scanner(System.in)).nextLine().equals("Y")) {
-					throw new IllegalStateException();
+					return false;
+//					throw new IllegalStateException();
 				}
 			}
 		}
