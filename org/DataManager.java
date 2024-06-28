@@ -43,7 +43,7 @@ public class DataManager {
 				String fundId = (String)data.get("_id");
 				String name = (String)data.get("name");
 				String description = (String)data.get("description");
-				Organization org = new Organization(fundId, name, description);
+				Organization org = new Organization(fundId, name, description, this);
 
 				//and the funds
 				JSONArray funds = (JSONArray)data.get("funds");
@@ -284,6 +284,39 @@ public class DataManager {
 				}
 			}
 		}
+	}
+
+
+
+	/**
+	 * Make a donation to the specified fund for the specified amount.
+	 * This method uses the /makeDonation endpoint in the API
+	 * @return true if successful, false otherwise
+	 */
+	public boolean makeDonation(String contributorId, String fundId, String amount) {
+
+		try {
+
+			Map<String, Object> map = new HashMap<>();
+			map.put("contributor", contributorId);
+			map.put("fund", fundId);
+			map.put("amount", amount);
+			String response = client.makeRequest("/makeDonation", map);
+//			System.out.println("Response is  " + response);
+
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(response);
+//			JSONObject json = new JSONObject(response);
+			String status = (String)json.get("status");
+
+			return status.equals("success");
+
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+
 	}
 
 }

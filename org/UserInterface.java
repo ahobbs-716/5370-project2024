@@ -1,9 +1,12 @@
 import javax.sound.midi.Soundbank;
 import javax.swing.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import java.util.SortedMap;
-
+import java.text.SimpleDateFormat;
 public class UserInterface {
 
 
@@ -31,12 +34,13 @@ public class UserInterface {
 
 					count++;
 				}
-				System.out.println("\nEnter the fund number to see more information.");
+				System.out.println("\nEnter the fund number to see more information");
 			}
 			System.out.println("Enter 0 to create a new fund");
 			System.out.println("Enter \"p\" to change this organisation's password");
 			System.out.println("Enter \"l\" or \"logout\" to logout");
 			System.out.println("Enter \"a\" or \"all\" to list out all contributors to this organization");
+			System.out.println("Enter \"d\" or \"donation\" to make a donation.");
 			// reads full line instead of expecting an int
 			String input = in.nextLine();
 			// closes program
@@ -54,6 +58,9 @@ public class UserInterface {
 			} else if (input.equals("p")) {
 				changePassword();
 				continue;
+			} else if (input.equals("donation") || input.equals("d")) {
+				// make donation
+				makeDonation();
 			}
 			int option;
 			try {
@@ -286,6 +293,87 @@ public class UserInterface {
 
 		}
 	}
+
+	public void makeDonation() {
+
+		int fundNumber = -1;
+
+		while (fundNumber <= 0 || fundNumber > org.getFunds().size()) {
+			System.out.println("Enter the fund number you'd like to donate to: ");
+			try {
+				fundNumber = Integer.parseInt(in.nextLine());
+
+				if (fundNumber <= 0 || fundNumber > org.getFunds().size()) {
+					System.out.println("Fund number must be within range.");
+				}
+
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid fund number!");
+				fundNumber = -1;
+			}
+		}
+
+//		if (fundNumber <= 0 || fundNumber > org.getFunds().size()) {
+//			System.out.println("Invalid fund number!");
+//		}
+
+		// Get fund
+		Fund fund = org.getFunds().get(fundNumber - 1);
+		System.out.println("You are making a donation to " + fund.getName() + " fund.");
+
+		// COntributor ID
+		String contributorId = "";
+		while (contributorId.isBlank()) {
+			System.out.print("Enter contributor ID: ");
+			contributorId = in.nextLine().trim();
+
+			if (contributorId.isBlank()) {
+				System.out.println("Contributor ID cannot be blank.");
+			}
+
+		}
+
+		// Amount
+		long amount = -1;
+		while (amount < 0) {
+			System.out.print("Enter the amount you'd like to donate: ");
+			String amtString = in.nextLine().trim();
+
+			try {
+				amount = Long.parseLong(amtString);
+
+				if (amount < 0) {
+					System.out.println("Amount cannot be negative.");
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Enter numeric value");
+			}
+
+		}
+		String fundId = fund.getId();
+
+		boolean status = org.makeDonation(contributorId, fundId, String.valueOf(amount));
+
+		if (status) {
+			System.out.println("Sucessful transaction, thank you for your donation!");
+			// today's date
+			// Get the current date and time in the desired format
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss ");
+			String formattedDate = dateFormat.format(new Date());
+
+			Donation e = new Donation(fundId, fund.getName(), amount, formattedDate);
+			List<Donation> donations = fund.getDonations();
+			donations.add(e);
+			fund.setDonations(donations);
+			displayFund(fundNumber);
+		} else {
+			System.out.println("Error processing donation, please try again");
+			makeDonation();
+		}
+
+
+	}
+
 
 
 	public static void main(String[] args) {
