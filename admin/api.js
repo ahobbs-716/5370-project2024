@@ -127,30 +127,6 @@ app.use('/deleteFund', (req, res) => {
 
     });
 
-/*
-Update organisation password in database
- */
-app.use('/updateOrgPassword', (req, res) => {
-
-	var filter = {"_id" : req.query.id };
-
-	var update = { "password" : req.query.password};
-
-	var action = { "$set" : update };
-
-	Organization.findOneAndUpdate( filter, action, { new : true }, (err, result) => {
-		if (err) {
-			res.json({'status': 'error', 'data' : err});
-		}
-		else {
-			//console.log(result);
-			res.json({'status' : 'success', 'data' : result});
-		}
-	});
-
-});
-
-
 
 
 /*
@@ -305,6 +281,51 @@ app.use('/findContributorByLoginAndPassword', (req, res) => {
     });
 
 
+app.use('/updateOrg', (req, res) => {
+
+	var filter = {"_id" : req.query.id };
+
+	var update = {"name" : req.query.name, "description" : req.query.description };
+	
+	var action = { "$set" : update };
+
+	Organization.findOneAndUpdate( filter, action, { new : true }, (err, result) => {
+		if (err) {
+			res.json({'status': 'error', 'data' : err});
+		}
+		else {
+			//console.log(result);
+			res.json({'status' : 'success', 'data' : result});
+		}
+		});
+	
+	});
+
+	/*
+Update organisation password in database
+ */
+app.use('/updateOrgPassword', (req, res) => {
+
+	var filter = {"_id" : req.query.id };
+
+	var update = { "password" : req.query.password};
+
+	var action = { "$set" : update };
+
+	Organization.findOneAndUpdate( filter, action, { new : true }, (err, result) => {
+		if (err) {
+			res.json({'status': 'error', 'data' : err});
+		}
+		else {
+			//console.log(result);
+			res.json({'status' : 'success', 'data' : result});
+		}
+	});
+
+});
+
+
+
 /*
 Return the name of the fund with ID specified as req.query.id
 */
@@ -381,6 +402,9 @@ app.use('/allOrgs', (req, res) => {
 		}
 	    }).sort({ 'name': 'asc' });
     });
+
+
+
 
 
 
