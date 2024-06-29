@@ -38,6 +38,7 @@ public class UserInterface {
 			}
 			System.out.println("Enter 0 to create a new fund");
 			System.out.println("Enter \"p\" to change this organisation's password");
+			System.out.println("Enter \"e\" or \"edit\" to list out all contributors to this organization");
 			System.out.println("Enter \"l\" or \"logout\" to logout");
 			System.out.println("Enter \"a\" or \"all\" to list out all contributors to this organization");
 			System.out.println("Enter \"d\" or \"donation\" to make a donation.");
@@ -61,8 +62,12 @@ public class UserInterface {
 			} else if (input.equals("donation") || input.equals("d")) {
 				// make donation
 				makeDonation();
+			} else if (input.equals("e") || input.equals("edit")) {
+				editOrgInformation();
+				continue;
 			}
-			int option;
+
+		int option;
 			try {
 				option = Integer.parseInt(input);
 			} catch (NumberFormatException e) {
@@ -373,6 +378,35 @@ public class UserInterface {
 
 
 	}
+
+	public void editOrgInformation() {
+		System.out.println("\n\nPlease enter your current password");
+		String input = in.nextLine();
+		if (!input.equals(org.getPassword())) {
+			System.out.println("The password is incorrect");
+			return;
+		}
+		String name;
+		String info;
+		System.out.println("The current name is \"" + org.getName() + "\".");
+		System.out.println("Please type in a new name or press \"enter\" to keep this name");
+		name = in.nextLine();
+		if (name.isEmpty()) {
+			name = org.getName();
+		}
+		System.out.println("The current description is:\n" + org.getDescription());
+		System.out.println("Please type in a new description or press \"enter\" to keep this description");
+		info = in.nextLine();
+		if (info.isEmpty()) {
+			info = org.getDescription();
+		}
+
+		if (dataManager.changeOrgInfo(name, info, org.getId())) {
+			System.out.println("An error occurred when trying to change the data. Please try again");
+		}
+
+	}
+
 
 
 
