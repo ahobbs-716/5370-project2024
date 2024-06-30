@@ -34,6 +34,7 @@ public class DataManager {
             String response = client.makeRequest("/findContributorByLoginAndPassword", map);
 
             JSONObject json = new JSONObject(response);
+            System.out.println(json);
             String status = (String)json.get("status");
 
             if (status.equals("success")) {

@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         contributor = dataManager.attemptLogin(login, password);
 
         if (contributor == null) {
+            System.out.println("Failed");
 
             Toast.makeText(this, "Login failed!", Toast.LENGTH_LONG).show();
 

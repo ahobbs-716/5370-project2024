@@ -1,4 +1,10 @@
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -28,7 +34,7 @@ public class WebClient {
 				request += key + "=" + queryParams.get(key).toString().replaceAll(" ", "%20") + "&";
 				
 			}
-			
+			System.out.println(request);
 			//System.out.println("Web Client request: " + request);
 			
 			URL url = new URL(request);
@@ -53,6 +59,30 @@ public class WebClient {
 		}
 		
 	}
+	public HttpResponse<String> makePostRequest(String resource, Map<String, Object> queryParams){
+		HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = null;
+        try {
+            request = HttpRequest.newBuilder().
+                    uri(new URI(resource))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(queryParams.toString())).build();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            return client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException e) {
+			try {
+				throw new RuntimeException(e);
+			} catch (RuntimeException ex) {
+				throw new RuntimeException(ex);
+			} finally {
+			}
+		} catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
 }

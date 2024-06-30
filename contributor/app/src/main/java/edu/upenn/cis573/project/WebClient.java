@@ -68,9 +68,12 @@ public class WebClient {
                 catch (Exception e) {
                     e.printStackTrace();
                 }
+                System.out.println(response);
+
                 return response;
             }
             );
+            System.out.println(future.get());
 
             return future.get();
 
