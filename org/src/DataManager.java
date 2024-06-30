@@ -43,7 +43,7 @@ public class DataManager {
 				String fundId = (String)data.get("_id");
 				String name = (String)data.get("name");
 				String description = (String)data.get("description");
-				Organization org = new Organization(fundId, name, description);
+				Organization org = new Organization(fundId, name, description, password, this);
 
 				//and the funds
 				JSONArray funds = (JSONArray)data.get("funds");
@@ -339,5 +339,84 @@ public class DataManager {
 			throw new IllegalStateException("An unknown error occurred in trying to communicate with the database");
 		}
 	}
+
+
+
+	/**
+	 * Make a donation to the specified fund for the specified amount.
+	 * This method uses the /makeDonation endpoint in the API
+	 * @return true if successful, false otherwise
+	 */
+	public boolean makeDonation(String contributorId, String fundId, String amount) {
+
+		try {
+
+			Map<String, Object> map = new HashMap<>();
+			map.put("contributor", contributorId);
+			map.put("fund", fundId);
+			map.put("amount", amount);
+			String response = client.makeRequest("/makeDonation", map);
+//			System.out.println("Response is  " + response);
+
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(response);
+//			JSONObject json = new JSONObject(response);
+			String status = (String)json.get("status");
+
+			return status.equals("success");
+
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+
+	}
+
+	public boolean changeOrgInfo(String name, String description, String id) {
+		if (client == null) {
+			throw new IllegalStateException("The internal communication has catastrophically failed. This is " +
+					"unlikely to resolve itself");
+		}
+		if (name == null || description == null) {
+			throw new IllegalArgumentException("Invalid data was given");
+		}
+		if (name.isEmpty() || description.isEmpty()) {
+			throw new IllegalArgumentException("The data contained empty strings");
+		}
+		try {
+			//create object to represent fund
+			Map<String, Object> map = new HashMap<>();
+			map.put("id", id);
+			map.put("name", name);
+			map.put("description", description);
+
+			//feed this to the RESTful API as an http request
+			String response = client.makeRequest("/updateOrg", map);
+
+			//create parser
+			String status;
+			JSONObject json;
+
+			try {
+				JSONParser parser = new JSONParser();
+				json = (JSONObject) parser.parse(response);
+				status = (String) json.get("status");
+			} catch (NullPointerException e) {
+				throw new IllegalStateException("The request to the data base gave an invalid return");
+			}
+			//if successful, create the fund as a JSON object
+			if (status.equals("success")) {
+				return true;
+			} else if (status.equals("error")) {
+				throw new IllegalStateException("An error occurred in the database");
+			} else return false;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new IllegalStateException("An unknown error occurred in trying to communicate with the database");
+		}
+	}
+
 
 }

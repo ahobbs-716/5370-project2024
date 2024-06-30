@@ -285,6 +285,70 @@ app.use('/findContributorByLoginAndPassword', (req, res) => {
 });
 
 
+app.use('/updateOrg', (req, res) => {
+
+	var filter = {"_id" : req.query.id };
+
+	var update = {"name" : req.query.name, "description" : req.query.description };
+	
+	var action = { "$set" : update };
+
+	Organization.findOneAndUpdate( filter, action, { new : true }, (err, result) => {
+		if (err) {
+			res.json({'status': 'error', 'data' : err});
+		}
+		else {
+			//console.log(result);
+			res.json({'status' : 'success', 'data' : result});
+		}
+		});
+	
+	});
+
+	/*
+Update organisation password in database
+ */
+app.use('/updateOrgPassword', (req, res) => {
+
+	var filter = {"_id" : req.query.id };
+
+	var update = { "password" : req.query.password};
+
+	var action = { "$set" : update };
+
+	Organization.findOneAndUpdate( filter, action, { new : true }, (err, result) => {
+		if (err) {
+			res.json({'status': 'error', 'data' : err});
+		}
+		else {
+			//console.log(result);
+			res.json({'status' : 'success', 'data' : result});
+		}
+	});
+
+});
+
+
+	/*
+Update contributor password in database
+ */
+ app.use('/changePassword', (req, res) => {
+    var filter = {"_id" : req.body.id, "password" : req.body.currentPassword };
+    var update = {"password" : req.body.newPassword};
+    var action = { "$set" : update };
+
+	Contributor.findOneAndUpdate( filter, action, { new : true }, (err, result) => {
+	        if (err) {
+                res.status(500).json({ "status": "error", "message": err.message });
+            } else if (!result) {
+                res.status(400).json({ "status": "error", "message": "Current password is incorrect" });
+            } else {
+                res.status(200).json({ "status": "success", "message": "Password updated successfully" });
+            }
+	});
+
+ });
+
 /*
 Return the name of the fund with ID specified as req.query.id
 */

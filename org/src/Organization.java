@@ -7,18 +7,26 @@ public class Organization {
 	private String id;
 	private String name;
 	private String description;
+	private String password;
 	
 	private List<Fund> funds;
+	private DataManager dataManager;
 	
-	public Organization(String id, String name, String description) {
+	public Organization(String id, String name, String description, String password, DataManager dataManager) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
+		this.password = password;
+		this.dataManager = dataManager;
+
 		funds = new LinkedList<>();
 	}
 
 	public String getId() {
 		return id;
+	}
+	public String getPassword() {
+		return password;
 	}
 
 	public String getName() {
@@ -39,6 +47,10 @@ public class Organization {
 	
 	public void addFund(Fund fund) {
 		funds.add(fund);
+	}
+
+	public DataManager getDataManager() {
+		return dataManager;
 	}
 
 	public List<Donation> listAllDonations() {
@@ -74,6 +86,20 @@ public class Organization {
 
 
 	}
+
+	// New method to make donation on the organization level
+	public boolean makeDonation(String contributorId, String fundId, String amount) {
+		try {
+			return dataManager.makeDonation(contributorId, fundId, amount);
+		} catch (Exception e) {
+			System.err.println("An error occured making donation " + e.getMessage());
+			return false;
+		}
+	}
+
+
+
+
 	
 
 }
