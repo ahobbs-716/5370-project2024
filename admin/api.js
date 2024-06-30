@@ -325,6 +325,27 @@ app.use('/updateOrgPassword', (req, res) => {
 });
 
 
+	/*
+Update contributor password in database
+ */
+ app.use('/changePassword', (req, res) => {
+    var filter = {"_id" : req.body.id, "password" : req.body.currentPassword };
+    var update = {"password" : req.body.newPassword};
+    var action = { "$set" : update };
+
+	Contributor.findOneAndUpdate( filter, action, { new : true }, (err, result) => {
+	        if (err) {
+                res.status(500).json({ "status": "error", "message": err.message });
+            } else if (!result) {
+                res.status(400).json({ "status": "error", "message": "Current password is incorrect" });
+            } else {
+                res.status(200).json({ "status": "success", "message": "Password updated successfully" });
+            }
+	});
+
+ });
+
+
 
 /*
 Return the name of the fund with ID specified as req.query.id
