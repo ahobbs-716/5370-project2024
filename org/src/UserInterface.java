@@ -333,10 +333,10 @@ public class UserInterface {
 
 	private void createNewOrganization() {
 		System.out.println("Please enter the login: ");
-		String loginName = input.nextLine().trim();
+		String loginName = input.nextLine();
 
 		System.out.println("Please enter the password: ");
-		String passwordData = input.nextLine().trim();
+		String passwordData = input.nextLine();
 
 		// params request
 
@@ -371,9 +371,9 @@ public class UserInterface {
 							return;
 						case "2":
 							System.out.println("Please enter your login: ");
-							loginName = input.nextLine().trim();
+							loginName = input.nextLine();
 							System.out.println("Please enter your password: ");
-							passwordData = input.nextLine().trim();
+							passwordData = input.nextLine();
 							if (login(loginName, passwordData)) {
 								start();
 							}
@@ -392,7 +392,6 @@ public class UserInterface {
 		}
 	}
 
-	// ... (rest of the class remains unchanged)
 }
 
 		//dataManager.createOrg(organization, loginName, passwordData);
