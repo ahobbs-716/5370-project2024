@@ -40,8 +40,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
     public void onChangePasswordButtonClick(View view) {
 
 
-
-
         EditText passwordCurrentField = findViewById(R.id.passwordCurrentField);
         String passwordCurrent = passwordCurrentField.getText().toString();
 
@@ -56,7 +54,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
         Contributor contributor = MainActivity.contributor;
         if (contributor == null) {
-            Toast.makeText(this, "An Error Occured! Please restart the app and try again", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "An Error Occurred! Please restart the app and try again", Toast.LENGTH_LONG).show();
             return;
         }
 

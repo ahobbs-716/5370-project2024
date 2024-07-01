@@ -20,6 +20,7 @@
         <activity android:name=".MenuActivity" />
         <activity android:name=".ViewDonationsActivity" />
         <activity android:name=".MakeDonationActivity" />
+        <activity android:name=".ChangePasswordActivity" />
 
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
