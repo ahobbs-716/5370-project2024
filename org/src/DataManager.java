@@ -285,30 +285,27 @@ public class DataManager {
 			}
 		}
 	}
-	public Organization createOrg(Organization organization, String login, String password){
+	public Organization createOrg(String login, String password, String name, String description) {
 		if (client == null) {
 			throw new IllegalStateException("The internal communication has catastrophically failed. This is " +
 					"unlikely to resolve itself");
 		}
-		if (organization.getName() == null || organization.getDescription() == null || login == null || password == null) {
+		if (name == null || description == null || login == null || password == null) {
 			throw new IllegalArgumentException("Invalid data was given");
 		}
 
 		try {
-
-			//create object to represent fund
+			// create object to represent organization
 			Map<String, Object> map = new HashMap<>();
 			map.put("login", login);
-			map.put("name", organization.getName());
-			map.put("description", organization.getDescription());
+			map.put("name", name);
+			map.put("description", description);
 			map.put("password", password);
-			System.out.println(map);
 
-			//feed this to the RESTful API
+			// send request to the RESTful API
 			String response = client.makeRequest("/createOrg", map);
-			System.out.println(response);
 
-			//create parser
+			// parse the response
 			String status;
 			JSONObject json;
 			try {
@@ -318,22 +315,20 @@ public class DataManager {
 			} catch (NullPointerException e) {
 				throw new IllegalStateException("The request to the database gave an invalid return");
 			}
-			//if successful, create the fund as a JSON object
+
+			// if successful, create the organization object
 			if (status.equals("success")) {
-				JSONObject org = (JSONObject)json.get("data");
-				String orgId = (String)org.get("_id");
-				return new Organization(orgId,organization.getName(), organization.getDescription() );
+				JSONObject org = (JSONObject) json.get("data");
+				String orgId = (String) org.get("_id");
+				return new Organization(orgId, name, description, password, this);
 			} else if (status.equals("conflict")) {
-				System.out.println((String)json.get("message"));
-				throw  new IllegalStateException((String)json.get("message"));
-
+				System.out.println((String) json.get("message"));
+				throw new IllegalStateException((String) json.get("message"));
 			} else if (status.equals("error")) {
-
 				throw new IllegalStateException("An error occurred in the database");
-			} else return null;
-
-
-
+			} else {
+				return null;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new IllegalStateException("An unknown error occurred in trying to communicate with the database");

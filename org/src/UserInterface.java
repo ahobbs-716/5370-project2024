@@ -13,11 +13,11 @@ public class UserInterface {
 	private DataManager dataManager;
 
 	private Organization org;
-	private static   Scanner input;
+	private static Scanner in;
 
 	public UserInterface(DataManager dataManager, Organization org) {
 		this.dataManager = dataManager;
-		input = new Scanner(System.in);
+		in = new Scanner(System.in);
 		this.org = org;
 	}
 
@@ -47,7 +47,7 @@ public class UserInterface {
 			System.out.println("Enter \"a\" or \"all\" to list out all contributors to this organization");
 			System.out.println("Enter \"d\" or \"donation\" to make a donation.");
 			// reads full line instead of expecting an int
-			String info = input.nextLine();
+			String info = in.nextLine();
 			// closes program
 			if (info.equals("quit") || info.equals("q")) {
 				System.out.println("Goodbye!");
@@ -63,15 +63,15 @@ public class UserInterface {
 			} else if (info.equals("p")) {
 				changePassword();
 				continue;
-			} else if (input.equals("donation") || input.equals("d")) {
+			} else if (in.equals("donation") || in.equals("d")) {
 				// make donation
 				makeDonation();
-			} else if (input.equals("e") || input.equals("edit")) {
+			} else if (in.equals("e") || in.equals("edit")) {
 				editOrgInformation();
 				continue;
 			}
 
-		int option;
+			int option;
 			try {
 				option = Integer.parseInt(info);
 			} catch (NumberFormatException e) {
@@ -96,7 +96,7 @@ public class UserInterface {
 
 		//check current password
 		System.out.println("\n\nPlease enter your current password to continue:");
-		String oldPassword = input.nextLine();
+		String oldPassword = in.nextLine();
 		if (dataManager.attemptLogin(org.getName(), oldPassword) == null) {
 			System.out.println("Unable to recognise current password. Returning you to the main menu.");
 			return;
@@ -104,15 +104,15 @@ public class UserInterface {
 
 		//get new password
 		System.out.println("\nPassword accepted. Please enter your new password: ");
-		String newPassword = input.nextLine();
+		String newPassword = in.nextLine();
 
 		//confirm new password
 		System.out.println("Please confirm your new password: ");
-		String confirmPassword = input.nextLine();
+		String confirmPassword = in.nextLine();
 
 		while (!confirmPassword.equals("q") && !confirmPassword.equals(newPassword)) {
 			System.out.println("Your new password does not match. Please re-enter your new password, or press 'q' to return to the main menu.");
-			confirmPassword = input.nextLine();
+			confirmPassword = in.nextLine();
 			if (confirmPassword.equals("q")) {
 				return;
 			}
@@ -132,7 +132,7 @@ public class UserInterface {
 			System.out.println(donation.getFundId() + ": $" + donation.getAmount() + " on " + donation.getDate() + " by " + donation.getContributorName());
 		}
 		System.out.println("Press the Enter key to go back to the listing of funds");
-		input.nextLine();
+		in.nextLine();
 	}
 
 
@@ -142,17 +142,17 @@ public class UserInterface {
 		while (name.isBlank()
 		) {
 			System.out.print("Enter the fund name: ");
-			name = input.nextLine().trim();
+			name = in.nextLine().trim();
 			// if name is blank re-prompt user
 			if (name.isBlank()) {
 				System.out.println("Fund name is blank, please enter a valid non-blank name");
 			}
 		}
 
-		String description= "";
+		String description = "";
 		while (description.isBlank()) {
 			System.out.print("Enter the fund description: ");
-			description = input.nextLine().trim();
+			description = in.nextLine().trim();
 
 			if (description.isBlank()) {
 				System.out.println("Fund description is blank, please enter a valid non-blank name");
@@ -165,7 +165,7 @@ public class UserInterface {
 		// Handle non-numeric value and negative values
 		while (target < 0) {
 			System.out.print("Enter the fund target: ");
-			String targetString = input.nextLine().trim();
+			String targetString = in.nextLine().trim();
 
 			try {
 				target = Long.parseLong(targetString);
@@ -190,11 +190,10 @@ public class UserInterface {
 			System.out.println(e.getMessage());
 		}
 		System.out.println("Enter 1 if you would like to try again, and anything else otherwise");
-		String newInfo = input.nextLine();
+		String newInfo = in.nextLine();
 		if (newInfo.equals("1")) {
 			createFund();
 		}
-
 
 
 	}
@@ -217,7 +216,7 @@ public class UserInterface {
 			System.out.println("* " + donation.getContributorName() + ": $" + donation.getAmount() + " on " + donation.getDate());
 			raised += donation.getAmount();
 		}
-		double portionRaised =  (double) raised / fund.getTarget();
+		double portionRaised = (double) raised / fund.getTarget();
 		long percent = Math.round(portionRaised * 1000) / 10;
 		if (percent < 100 || raised >= fund.getTarget()) {
 			System.out.println("Total donation amount: $" + raised + " (" + percent + "% of target)");
@@ -232,14 +231,15 @@ public class UserInterface {
 			System.out.println("Press 2 to see the aggregate donations");
 			System.out.println("Press 3 to go back to the listing of funds");
 
-			command = input.nextLine();
+			command = in.nextLine();
 
 			if (command.equals("1")) {
 
 				if (confirmSelection()) {
 					if (dataManager.deleteFund(fund.getId())) {
 						org.deleteFund(fund);
-					};
+					}
+					;
 				}
 
 				return;
@@ -276,9 +276,9 @@ public class UserInterface {
 			// pass null arguments for a logout and new login
 			if (login == null || password == null) {
 				System.out.println("Please enter the login");
-				login = input.nextLine();
+				login = in.nextLine();
 				System.out.println("Please enter the password");
-				password = input.nextLine();
+				password = in.nextLine();
 			}
 			try {
 				org = dataManager.attemptLogin(login, password);
@@ -293,7 +293,7 @@ public class UserInterface {
 				System.out.println("Error in communicating with server");
 			}
 			System.out.println("Enter either \"q\" or \"quit\" to exit or press enter to try again.");
-			String Input = input.nextLine();
+			String Input = in.nextLine();
 			if (Input.equals("quit") || Input.equals("q")) {
 				System.out.println("Goodbye!");
 				return false;
@@ -413,8 +413,6 @@ public class UserInterface {
 	}
 
 
-
-
 	public static void main(String[] args) {
 		DataManager ds = new DataManager(new WebClient("localhost", 3001));
 		String login = null;
@@ -432,8 +430,8 @@ public class UserInterface {
 			System.out.println("3. Quit");
 			System.out.println("Please Enter 1, 2, or 3 for your choice");
 
-			int userChoice = input.nextInt();
-			input.nextLine();
+			int userChoice = in.nextInt();
+			in.nextLine();
 
 			switch (userChoice) {
 				case 1:
@@ -453,29 +451,22 @@ public class UserInterface {
 		}
 	}
 
-	private void createNewOrganization() {
+	public void createNewOrganization() {
+		Organization createdOrg = null;
 		System.out.println("Please enter the login: ");
-		String loginName = input.nextLine();
+		String loginName = in.nextLine();
 
 		System.out.println("Please enter the password: ");
-		String passwordData = input.nextLine();
-
-		// params request
-
-		// req.body
+		String password = in.nextLine();
 
 		System.out.println("Please enter the name of the organisation: ");
-		String name = input.nextLine().trim();
+		String name = in.nextLine();
 
 		System.out.println("Please enter the description of the organisation: ");
-		String description = input.nextLine().trim();
-
-
-
-		Organization organization = new Organization(null, name, description);
+		String description = in.nextLine();
 
 		try {
-			Organization createdOrg = dataManager.createOrg(organization, loginName, passwordData);
+			createdOrg = dataManager.createOrg(loginName, password, name, description);
 			if (createdOrg != null) {
 				System.out.println("Organization created successfully!");
 				while (true) {
@@ -483,20 +474,20 @@ public class UserInterface {
 					System.out.println("1. Log in with the new credentials");
 					System.out.println("2. Log in with different login credentials");
 					System.out.println("3. Go back to the main menu");
-					String choice = input.nextLine().trim();
+					String choice = in.nextLine().trim();
 
 					switch (choice) {
 						case "1":
-							if (login(loginName, passwordData)) {
+							if (login(loginName, password)) {
 								start();
 							}
 							return;
 						case "2":
 							System.out.println("Please enter your login: ");
-							loginName = input.nextLine();
+							loginName = in.nextLine();
 							System.out.println("Please enter your password: ");
-							passwordData = input.nextLine();
-							if (login(loginName, passwordData)) {
+							password = in.nextLine();
+							if (login(loginName, password)) {
 								start();
 							}
 							return;
@@ -513,11 +504,9 @@ public class UserInterface {
 			System.out.println("Error creating organization: " + e.getMessage());
 		}
 	}
+	//dataManager.createOrg(organization, loginName, passwordData);
 
 }
-
-		//dataManager.createOrg(organization, loginName, passwordData);
-
 
 	//}
 
