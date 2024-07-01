@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
@@ -210,4 +212,52 @@ public class DataManager {
         }
 
     }
+
+    public void updatePassword(String id, String currentPassword, String newPassword) {
+
+        //defensive programming checks
+        if (client == null) {
+            throw new IllegalStateException("The internal communication has catastrophically failed. This is " +
+                    "unlikely to resolve itself");
+        }
+
+        if (newPassword == null || id == null) {
+            throw new IllegalArgumentException("Error in the password or the ID");
+        }
+
+        //make the request to the RESTful API
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        map.put("currentPassword", currentPassword);
+        map.put("newPassword", newPassword);
+        String response = client.makeRequest("/changePassword", map);
+
+        //check that the request has been successful
+        String status;
+        JSONObject json;
+
+
+        try {
+
+            //set up the parser
+            json = new JSONObject(response);
+            status = (String) json.get("status");
+            //check if a 'success' response
+            if (status.equals("success")) {
+                return;
+            } else {
+                String error = (String) json.get("message");
+                if (error.equals("Current password is incorrect")) {
+                    throw new IllegalArgumentException("Current password was incorrect");
+                }
+
+                throw new IllegalStateException();
+            }
+
+        } catch (JSONException | IllegalStateException e) {
+            throw new IllegalStateException("Error in communicating with server.");
+        }
+    }
+
+
 }
