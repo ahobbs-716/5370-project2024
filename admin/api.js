@@ -395,7 +395,7 @@ app.use('/createOrg', (req, res) => {
 
         } else {
             //console.log(result);
-            res.json({'status': 'conflict', 'message': 'Login is already  taken'});
+            res.json({'status': 'conflict', 'message': 'Login is already  taken, please enter a new name'});
         }
     });
 

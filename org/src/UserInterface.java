@@ -452,62 +452,80 @@ public class UserInterface {
 	}
 
 	public void createNewOrganization() {
-		Organization createdOrg = null;
-		System.out.println("Please enter the login: ");
-		String loginName = in.nextLine();
 
-		System.out.println("Please enter the password: ");
-		String password = in.nextLine();
+		while (true) {
 
-		System.out.println("Please enter the name of the organisation: ");
-		String name = in.nextLine();
+			Organization createdOrg = null;
+			System.out.println("Please enter the login: ");
+			String loginName = in.nextLine();
 
-		System.out.println("Please enter the description of the organisation: ");
-		String description = in.nextLine();
+			System.out.println("Please enter the password: ");
+			String password = in.nextLine();
 
-		try {
-			createdOrg = dataManager.createOrg(loginName, password, name, description);
-			if (createdOrg != null) {
-				System.out.println("Organization created successfully!");
-				while (true) {
-					System.out.println("What would you like to do now?");
-					System.out.println("1. Log in with the new credentials");
-					System.out.println("2. Log in with different login credentials");
-					System.out.println("3. Go back to the main menu");
-					String choice = in.nextLine().trim();
+			System.out.println("Please enter the name of the organisation: ");
+			String name = in.nextLine();
 
-					switch (choice) {
-						case "1":
-							if (login(loginName, password)) {
-								start();
-							}
-							return;
-						case "2":
-							System.out.println("Please enter your login: ");
-							loginName = in.nextLine();
-							System.out.println("Please enter your password: ");
-							password = in.nextLine();
-							if (login(loginName, password)) {
-								start();
-							}
-							return;
-						case "3":
-							return; // This will now return to the main menu loop
-						default:
-							System.out.println("Invalid choice. Please try again.");
-					}
-				}
-			} else {
-				System.out.println("Failed to create organization. The login name may already exist.");
+			System.out.println("Please enter the description of the organisation: ");
+			String description = in.nextLine();
+			Organization organization = dataManager.createOrg(loginName, password, name, description);
+			if(organization!=null){
+				System.out.println("Organization " + organization.getName() + " created successfully");
+				System.out.println("Now let's create a fund");
+				System.out.println("Please enter the Fund Name: ");
+				String fundsName = in.nextLine();
+				System.out.println("Please enter the Fund Description: ");
+				String fundsDescription = in.nextLine();
+				System.out.println("Please enter the Fund target: ");
+				long target = in.nextLong();
+
+				dataManager.createFund(organization.getId(), fundsName, fundsDescription, target);
+				System.out.println("Funds " + fundsName+ " created successfully");
+				break;
 			}
-		} catch (IllegalStateException e) {
-			System.out.println("Error creating organization: " + e.getMessage());
-		}
-	}
-	//dataManager.createOrg(organization, loginName, passwordData);
+			else{
+				System.out.println("Please try again");
+			}
+//			}try {
+//
+//
+//					System.out.println("Organization created successfully!");
+//					while (true) {
+//						System.out.println("What would you like to do now?");
+//						System.out.println("1. Log in with the new credentials");
+//						System.out.println("2. Log in with different login credentials");
+//						System.out.println("3. Go back to the main menu");
+//						String choice = in.nextLine().trim();
+//
+//						switch (choice) {
+//							case "1":
+//								if (login(loginName, password)) {
+//									start();
+//								}
+//								return;
+//							case "2":
+//								System.out.println("Please enter your login: ");
+//								loginName = in.nextLine();
+//								System.out.println("Please enter your password: ");
+//								password = in.nextLine();
+//								if (login(loginName, password)) {
+//									start();
+//								}
+//								return;
+//							case "3":
+//								return; // This will now return to the main menu loop
+//							default:
+//								System.out.println("Invalid choice. Please try again.");
+//						}
+//					}
+//
+//			} catch (IllegalStateException e) {
+//				System.out.println("Error creating organization: " + e.getMessage());
+//			}
 
+			//dataManager.createOrg(organization, loginName, passwordData);
+
+		}}
 }
-
 	//}
 
 //}
