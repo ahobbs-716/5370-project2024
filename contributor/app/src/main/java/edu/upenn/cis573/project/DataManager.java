@@ -221,7 +221,7 @@ public class DataManager {
                     "unlikely to resolve itself");
         }
 
-        if (newPassword == null || id == null) {
+        if (newPassword == null || currentPassword == null || id == null) {
             throw new IllegalArgumentException("Error in the password or the ID");
         }
 
@@ -242,21 +242,27 @@ public class DataManager {
             //set up the parser
             json = new JSONObject(response);
             status = (String) json.get("status");
-            //check if a 'success' response
-            if (status.equals("success")) {
-                return;
-            } else {
-                String error = (String) json.get("message");
-                if (error.equals("Current password is incorrect")) {
-                    throw new IllegalArgumentException("Current password was incorrect");
-                }
-
-                throw new IllegalStateException();
-            }
-
         } catch (JSONException | IllegalStateException e) {
             throw new IllegalStateException("Error in communicating with server.");
         }
+            //check if a 'success' response
+        if (status.equals("success")) {
+            return;
+        } else {
+            String error;
+            try {
+                error = (String) json.get("message");
+            } catch (JSONException | IllegalStateException e) {
+                throw new IllegalStateException();
+            }
+            if (error.equals("Current password is incorrect")) {
+                throw new IllegalArgumentException("Current password was incorrect");
+            }
+
+            throw new IllegalStateException();
+        }
+
+
     }
 
 
