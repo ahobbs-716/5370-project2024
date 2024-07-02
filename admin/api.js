@@ -266,17 +266,21 @@ Return the contributor with login specified as req.query.login and password spec
 as req.query.password; essentially acts as login for contributors.
 */
 app.use('/findContributorByLoginAndPassword', (req, res) => {
-    console.log("Hello")
+    console.log("Hello deer")
+    console.log("See here")
 
+    console.log('Request parameters:',req.query);
     var query = {"login": req.query.login, "password": req.query.password};
 
     Contributor.findOne(query, (err, result) => {
         if (err) {
+            console.error('Error finding contributor:', err);
             res.json({"status": "error", "data": err});
         } else if (!result) {
+            console.log('Login failed');
             res.json({"status": "login failed"});
         } else {
-            //console.log(result);
+            console.log('Login successful:', result);
             res.json({"status": "success", "data": result});
         }
     });
@@ -333,16 +337,20 @@ app.use('/updateOrgPassword', (req, res) => {
 Update contributor password in database
  */
  app.use('/changePassword', (req, res) => {
-    var filter = {"_id" : req.body.id, "password" : req.body.currentPassword };
-    var update = {"password" : req.body.newPassword};
+    var filter = {"_id" : req.query.id, "password" : req.query.currentPassword };
+    var update = {"password" : req.query.newPassword};
     var action = { "$set" : update };
 
 	Contributor.findOneAndUpdate( filter, action, { new : true }, (err, result) => {
 	        if (err) {
+                console.error('error updating password',err);
                 res.status(500).json({ "status": "error", "message": err.message });
             } else if (!result) {
+                console.log('Current password is incorrect');
+
                 res.status(400).json({ "status": "error", "message": "Current password is incorrect" });
             } else {
+                console.log('Password updated successfully');
                 res.status(200).json({ "status": "success", "message": "Password updated successfully" });
             }
 	});

@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
@@ -35,6 +36,17 @@ public class WebClient {
      * followed by key=value& for each of the entries in the queryParams map.
      * @return the JSON object returned by the API if successful, null if unsuccessful
      */
+  /*  public String makeRetrievePasswordRequest(String email){
+        try {
+            Map<String, Object> map = new HashMap<>();
+            map.put("email", email);
+            String response = makeRequest("/retrievePassword, map");
+            return response;
+        }catch (Exception e){
+            throw new IllegalStateException("Error communicating with servr: " + e.getMessage());
+        }
+    }*/
+
     public String makeRequest(String resource, Map<String, Object> queryParams) {
 
         //Log.v("webclient", request);
