@@ -104,12 +104,12 @@ public class DataManager_attemptLogin_Test {
                 }
                 return "{\"status\":\"success\"," +
                         "\"data\":{" +
-                            "\"id\":\"12345\"," +
+                            "\"_id\":\"12345\"," +
                             "\"name\":\"organisation1\"," +
                             "\"description\":\"this is organisation1\"," +
                             "\"funds\"[" +
                                 "{" +
-                                    "\"id\":\"1029\"" +
+                                    "\"_id\":\"1029\"" +
                                     "\"name\":\"fund1\"" +
                                     "\"description\":\"the first fund\"" +
                                     "\"target\":10000" +

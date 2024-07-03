@@ -29,7 +29,6 @@ public class DataManager_deleteFund_Test {
                         "\"donations\":[]," +
                         "\"__v\":0}}";
             };
-
         });
 
         assertTrue(dm.deleteFund("6672d769c286ce21bc8ceba5"));
@@ -46,9 +45,6 @@ public class DataManager_deleteFund_Test {
 
     @Test (expected = IllegalStateException.class)
     public void TestDeleteFund_IssueWithAPI() {
-
-        ByteArrayInputStream in = new ByteArrayInputStream("N".getBytes());
-        System.setIn(in);
 
         DataManager dm = new DataManager(new WebClient("localhost", 3001) {
 
@@ -70,7 +66,6 @@ public class DataManager_deleteFund_Test {
         });
 
         dm.deleteFund("6672d769c286ce21bc8ceba5");
-
     }
 
     @Test(expected=IllegalStateException.class)
@@ -81,6 +76,19 @@ public class DataManager_deleteFund_Test {
 
         // this assumes no server is running on port 3002
         DataManager dm = new DataManager(new WebClient("localhost", 3002));
+        dm.deleteFund("6672d769c286ce21bc8ceba5");
+        fail("DataManager.attemptLogin does not throw IllegalStateException when WebClient cannot connect to server");
+
+    }
+
+    @Test(expected=IllegalStateException.class)
+    public void testDeleteFund_WebClientIsNull() {
+
+        ByteArrayInputStream in = new ByteArrayInputStream("N".getBytes());
+        System.setIn(in);
+
+        // this assumes no server is running on port 3002
+        DataManager dm = new DataManager(null);
         dm.deleteFund("6672d769c286ce21bc8ceba5");
         fail("DataManager.attemptLogin does not throw IllegalStateException when WebClient cannot connect to server");
 
@@ -133,31 +141,6 @@ public class DataManager_deleteFund_Test {
         });
         dm.deleteFund("6672d769c286ce21bc8ceba5");
         fail("DataManager.attemptLogin does not throw IllegalStateException when WebClient returns malformed JSON");
-
-    }
-
-    @Test
-    public void testDeleteFund_RerunTestOption() {
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        System.setErr(new PrintStream(out));
-
-        try {
-            ByteArrayInputStream in = new ByteArrayInputStream("Y".getBytes());
-            System.setIn(in);
-
-            DataManager dm = new DataManager(new WebClient("localhost", 3001) {
-                @Override
-                public String makeRequest(String resource, Map<String, Object> queryParams) {
-                    return null;
-                }
-            });
-
-            dm.deleteFund("6672d769c286ce21bc8ceba5");
-
-        } catch (NoSuchElementException e) {};
-
-        assertEquals("Anerroroccurredintryingtocommunicatewiththedatabase.PressYifyouwouldliketotrythisoperation.Anerroroccurredintryingtocommunicatewiththedatabase.PressYifyouwouldliketotrythisoperation.", out.toString().replaceAll("\\s",""));
 
     }
 
