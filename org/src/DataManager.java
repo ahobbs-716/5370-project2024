@@ -291,60 +291,51 @@ public class DataManager {
     }
 
     public Organization createOrg(String login, String password, String name, String description) {
+        if (name == null || description == null || login == null || password == null) {
+            throw new IllegalArgumentException("Invalid data was given");
+        }
 
-            if (client == null) {
-                throw new IllegalStateException("The internal communication has catastrophically failed. This is " +
-                        "unlikely to resolve itself");
+        try {
+            // create object to represent organization
+            Map<String, Object> map = new HashMap<>();
+            map.put("login", login);
+            map.put("name", name);
+            map.put("description", description);
+            map.put("password", password);
+
+            // send request to the RESTful API
+            String response = client.makeRequest("/createOrg", map);
+
+            // parse the response
+            if (response == null) {
+                throw new IllegalStateException("The request to the database gave an invalid return");
             }
-            if (name == null || description == null || login == null || password == null) {
-                throw new IllegalArgumentException("Invalid data was given");
+
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(response);
+            String status = (String) json.get("status");
+
+            if (status == null) {
+                throw new IllegalStateException("The request to the database gave an invalid return");
             }
 
-            try {
-
-                // create object to represent organization
-                Map<String, Object> map = new HashMap<>();
-                map.put("login", login);
-                map.put("name", name);
-                map.put("description", description);
-                map.put("password", password);
-
-                // send request to the RESTful API
-
-                String response = client.makeRequest("/createOrg", map);
-
-                // parse the response
-                String status = null;
-                JSONObject json = null;
-                try {
-                    JSONParser parser = new JSONParser();
-                    json = (JSONObject) parser.parse(response);
-                    status = (String) json.get("status");
-                } catch (NullPointerException e) {
-                    System.out.println("The request to the database gave an invalid return");
-                }
-
-                // if successful, create the organization object
-                if (status.equals("success")) {
-                    JSONObject org = (JSONObject) json.get("data");
-                    String orgId = (String) org.get("_id");
-                  return new Organization(orgId, name, description, password, this);
-
-                } else if (status.equals("conflict")) {
-                    System.out.println((String) json.get("message"));
-
-                } else if (status.equals("error")) {
-                  System.out.println("An error occurred in the database");
-                }
-
-
-            } catch (Exception e) {
-                e.printStackTrace();
-               System.out.println("An unknown error occurred in trying to communicate with the database: Please try againy");
+            // if successful, create the organization object
+            if (status.equals("success")) {
+                JSONObject org = (JSONObject) json.get("data");
+                String orgId = (String) org.get("_id");
+                return new Organization(orgId, name, description, password, this);
+            } else if (status.equals("conflict")) {
+                System.out.println((String) json.get("message"));
+            } else if (status.equals("error")) {
+                System.out.println("An error occurred in the database");
             }
-            return null;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new IllegalStateException("An unknown error occurred in trying to communicate with the database: Please try again", e);
+        }
+        return null;
     }
-
 
     /**
      * Make a donation to the specified fund for the specified amount.
