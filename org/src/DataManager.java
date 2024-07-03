@@ -261,7 +261,6 @@ public class DataManager {
 
         while (true) {
             //otherwise, use the deleteFund endpoint
-            try {
 
                 //create object to represent fund
                 Map<String, Object> map = new HashMap<>();
@@ -271,24 +270,22 @@ public class DataManager {
                 String response = client.makeRequest("/deleteFund", map);
 
                 JSONParser parser = new JSONParser();
-                JSONObject json = (JSONObject) parser.parse(response);
+                JSONObject json;
+
+                try {
+                    json = (JSONObject) parser.parse(response);
+                } catch (ParseException | NullPointerException e) {
+                    throw new IllegalStateException("Could not communicate with database");
+                }
 
                 if (!(json.get("status").equals("success"))) {
-                    throw new IllegalStateException("The request to the data base gave an invalid return");
+                    throw new IllegalStateException("The request to the database gave an invalid return");
                 }
 
                 return true;
-
-            } catch (Exception e) {
-
-                System.err.println("An error occurred in trying to communicate with the database. Press Y if you would like to try this operation. Select any other key to return to the funds interface.");
-                if (!(new Scanner(System.in)).nextLine().equals("Y")) {
-                    return false;
-//					throw new IllegalStateException();
-                }
-            }
         }
     }
+
 
     public Organization createOrg(String login, String password, String name, String description) {
         if (name == null || description == null || login == null || password == null) {

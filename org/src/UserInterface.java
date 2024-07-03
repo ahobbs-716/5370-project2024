@@ -236,10 +236,14 @@ public class UserInterface {
 			if (command.equals("1")) {
 
 				if (confirmSelection()) {
-					if (dataManager.deleteFund(fund.getId())) {
-						org.deleteFund(fund);
+
+					while (!dataManager.deleteFund(fund.getId())) {
+						System.out.println("Error deleting fund. Press 'C' to cancel operation. Press any other key to try again.");
+						if (System.in.equals("C")) {
+							return;
+						}
 					}
-					;
+					org.deleteFund(fund);
 				}
 
 				return;
