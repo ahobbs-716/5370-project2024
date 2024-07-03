@@ -71,4 +71,51 @@ public class DataManager_createOrg_Test {
         DataManager dm = new DataManager(new WebClient("localhost", 3001));
         dm.createOrg("testorg", "testpass", "Test Organization", null);
     }
+    @Test(expected = IllegalStateException.class)
+    public void testInvalidJsonResponse() {
+        DataManager dm = new DataManager(new WebClient("localhost", 3001) {
+            @Override
+            public String makeRequest(String resource, Map<String, Object> queryParams) {
+                return "This is not valid JSON";
+            }
+        });
+
+        dm.createOrg("testorg", "testpass", "Test Org", "Test Description");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testNullClient() {
+        DataManager nullClientManager = new DataManager(null);
+        nullClientManager.createOrg("testorg", "testpass", "Test Org", "Test Description");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testWebClientException() {
+        DataManager dm = new DataManager(new WebClient("localhost", 3001) {
+            @Override
+            public String makeRequest(String resource, Map<String, Object> queryParams) {
+                throw new RuntimeException("Network error");
+            }
+        });
+
+        dm.createOrg("testorg", "testpass", "Test Org", "Test Description");
+    }
+
+    @Test
+    public void testEmptyStrings() {
+        DataManager dm = new DataManager(new WebClient("localhost", 3001) {
+            @Override
+            public String makeRequest(String resource, Map<String, Object> queryParams) {
+                return "{\"status\":\"success\",\"data\":{\"_id\":\"12345\",\"login\":\"\",\"name\":\"\",\"description\":\"\",\"password\":\"\"}}";
+            }
+        });
+
+        Organization org = dm.createOrg("", "", "", "");
+
+        assertNotNull(org);
+        assertEquals("12345", org.getId());
+        assertEquals("", org.getName());
+        assertEquals("", org.getDescription());
+        assertEquals("", org.getPassword());
+    }
 }
