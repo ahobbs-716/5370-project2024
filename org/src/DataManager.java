@@ -261,7 +261,6 @@ public class DataManager {
 
         while (true) {
             //otherwise, use the deleteFund endpoint
-            try {
 
                 //create object to represent fund
                 Map<String, Object> map = new HashMap<>();
@@ -271,22 +270,19 @@ public class DataManager {
                 String response = client.makeRequest("/deleteFund", map);
 
                 JSONParser parser = new JSONParser();
-                JSONObject json = (JSONObject) parser.parse(response);
+                JSONObject json;
+
+                try {
+                    json = (JSONObject) parser.parse(response);
+                } catch (ParseException | NullPointerException e) {
+                    throw new IllegalStateException("Could not communicate with database");
+                }
 
                 if (!(json.get("status").equals("success"))) {
-                    throw new IllegalStateException("The request to the data base gave an invalid return");
+                    throw new IllegalStateException("The request to the database gave an invalid return");
                 }
 
                 return true;
-
-            } catch (Exception e) {
-
-                System.err.println("An error occurred in trying to communicate with the database. Press Y if you would like to try this operation. Select any other key to return to the funds interface.");
-                if (!(new Scanner(System.in)).nextLine().equals("Y")) {
-                    return false;
-//					throw new IllegalStateException();
-                }
-            }
         }
     }
 
@@ -315,8 +311,50 @@ public class DataManager {
             JSONObject json = (JSONObject) parser.parse(response);
             String status = (String) json.get("status");
 
+<<<<<<< Updated upstream
             if (status == null) {
                 throw new IllegalStateException("The request to the database gave an invalid return");
+=======
+                // create object to represent organization
+                Map<String, Object> map = new HashMap<>();
+                map.put("login", login);
+                map.put("name", name);
+                map.put("description", description);
+                map.put("password", password);
+
+                // send request to the RESTful API
+
+                String response = client.makeRequest("/createOrg", map);
+
+                // parse the response
+                String status = null;
+                JSONObject json = null;
+                try {
+                    JSONParser parser = new JSONParser();
+                    json = (JSONObject) parser.parse(response);
+                    status = (String) json.get("status");
+                } catch (NullPointerException e) {
+                    System.out.println("The request to the database gave an invalid return");
+                }
+
+                // if successful, create the organization object
+                if (status.equals("success")) {
+                    JSONObject org = (JSONObject) json.get("data");
+                    String orgId = (String) org.get("_id");
+                  return new Organization(orgId, name, description, password, this);
+
+                } else if (status.equals("conflict")) {
+                    System.out.println((String) json.get("message"));
+
+                } else if (status.equals("error")) {
+                  System.out.println("An error occurred in the database");
+                }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+               System.out.println("An unknown error occurred in trying to communicate with the database: Please try again");
+>>>>>>> Stashed changes
             }
 
             // if successful, create the organization object
