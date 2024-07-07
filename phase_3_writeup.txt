@@ -1,0 +1,39 @@
+Summary of team members and changes to code:
+
+Sam
+
+3.1 Adds createOrg and allows user to select whether to log in immediately, or add a new organization, add a fund to it, and then log in.
+Adds createOrgTests
+
+Alice
+
+3.2
+
+Addition of /updateOrgPassword to api.js
+Addition of updatePassword method to DataManager
+Addition of changePassword method in UserInterface
+UpdatePasswordTests added 
+Nb. error message for mismatching passwords gives option to reenter or return to menu
+
+Nico
+
+3.3 Adds the changeOrgInfo method to data manager which uses updateOrg from the API. Users are prompted for their current password, and if given correct, can choose to modify either their orgs name or description.
+
+
+Ijeoma
+
+3.4 Allowing for organization to make donation to one of the funds on behalf of a contributor
+Create a make donation method in DataManager to make request to API
+Makedonation method in org to make donation on organization level by referencing Datamanger make donation 
+User interfacing to allow organization make a donation and handle errors like negative amount, blank ID etc.
+
+
+Ijeoma/Sam/Nico/Alice
+
+3.6 Ijoema implemented change password endpoint in api.js
+Sam troubleshooted to fix an error that was causing app crash.
+Nico wrote the code for data manager and started the changes for the apps UI
+Alice finished the UI and fixed the bugs in the display. 
+
+
+Full google doc for report: https://docs.google.com/document/d/1hQDdIbdWBmGO_chOH03qEONVQ6wT_ZzrKLtwXhNXTkM/edit
